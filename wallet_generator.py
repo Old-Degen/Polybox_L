@@ -1,8 +1,9 @@
-from pathlib import Path
+import tkinter as tk
 import csv
 from web3 import Web3, Account
 
 
+root = tk.Tk()
 def generate_wallets(num_wallets, group_name="", wallet_name=""):
     try:
         # Если не указано имя группы, создаем группу со стандартным именем
@@ -11,7 +12,11 @@ def generate_wallets(num_wallets, group_name="", wallet_name=""):
 
         # Если не указано имя кошельков, используем имя группы по умолчанию
         if not wallet_name:
-            wallet_name = f"{group_name}_wallet"
+            wallet_name = group_name
+
+        # Создаем Entry виджет для ввода количества кошельков
+        num_wallets_entry = tk.Entry(root, width=30)
+        num_wallets_entry.pack()
 
         # Генерируем указанное количество кошельков
         wallets = []
@@ -31,6 +36,7 @@ def generate_wallets(num_wallets, group_name="", wallet_name=""):
 
     except Exception as e:
         print(f"Error generating wallets: {e}")
+
 
 class WalletManager:
     def __init__(self):
