@@ -75,3 +75,5 @@ class WalletManager:
 
         # Save the updated wallets
         self.save_wallets()
+
+        
