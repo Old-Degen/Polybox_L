@@ -92,7 +92,7 @@ tab2 = ttk.Frame(notebook)
 notebook.add(tab2, text="View Wallets")
 
 
-def view_wallets():
+def view_wallet():
     # Создаем экземпляр класса WalletManager
     manager = WalletManager()
 
@@ -114,7 +114,7 @@ def view_wallets():
 
 
 # Создаем кнопки для создания и просмотра кошельков
-generate_button = Button(tab1, text="Generate Wallets", command=create_wallets)
+generate_button = Button(tab1, text="Generate Wallets", command=create_wallet)
 generate_button.pack()
 
 view_button = Button(tab1, text="View Wallets", command=view_wallets)
