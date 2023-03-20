@@ -3,7 +3,6 @@ import csv
 from web3 import Web3, Account
 
 
-root = tk.Tk()
 def generate_wallets(num_wallets, group_name="", wallet_name=""):
     try:
         # Если не указано имя группы, создаем группу со стандартным именем
