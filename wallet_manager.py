@@ -41,9 +41,67 @@ class WalletManager:
             for row in wallets_csv:
                 self.wallets.append(row)
 
+    class WalletManager:
+        def __init__(self):
+            self.wallets = []
+            with open("wallets.csv") as f:
+                wallets_csv = csv.reader(f)
+                next(wallets_csv)  # skip header
+                for row in wallets_csv:
+                    self.wallets.append(row)
+
+        def add_wallet(self, name, address):
+            self.wallets.append({"name": name, "address": address})
+            self.save_wallets()
+
+        def delete_wallet(self, index):
+            del self.wallets[index]
+            self.save_wallets()
+
+        def save_wallets(self):
+            with open("wallets.csv", mode="w", newline="") as f:
+                writer = csv.writer(f)
+                writer.writerow(["name", "address"])
+                for wallet in self.wallets:
+                    writer.writerow([wallet["name"], wallet["address"]])
+
+        def distribute_tokens(self, amount):
+            num_wallets = len(self.wallets)
+            if num_wallets == 0:
+                print("No wallets available")
+                return
+            share = amount // num_wallets
+            remainder = amount % num_wallets
+            for i, wallet in enumerate(self.wallets):
+                if i == 0:
+                    # Add the remainder to the first wallet
+                    balance = share + remainder
+                else:
+                    balance = share
+                # Perform the transfer
+                print(f"Transferring {balance} tokens to {wallet['address']}")
+                # TODO: implement the transfer logic
+
+            # Save the updated wallets
+            self.save_wallets()
+
+        def view_wallets(self):
+            print("List of wallets:")
+            for i, wallet in enumerate(self.wallets):
+                print(f"{i + 1}. Name: {wallet['name']}, Address: {wallet['address']}")
+
     def add_wallet(self, name, address):
         self.wallets.append({"name": name, "address": address})
         self.save_wallets()
+
+    class WalletManager:
+        def __init__(self, wallets):
+            self.wallets = wallets
+            with open("wallets.csv") as f:
+                wallets_csv = csv.reader(f)
+                next(wallets_csv)  # skip header
+                for row in wallets_csv:
+                    self.wallets.append(row)
 
     def delete_wallet(self, index):
         del self.wallets[index]
@@ -76,4 +134,3 @@ class WalletManager:
         # Save the updated wallets
         self.save_wallets()
 
-        
