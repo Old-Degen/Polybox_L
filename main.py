@@ -17,7 +17,8 @@ notebook = ttk.Notebook(root)
 
 # Создаем вкладку для создания кошельков
 tab1 = ttk.Frame(notebook)
-notebook.add(tab1, text="Create Wallets")
+generate_button = Button(tab1, text="Generate Wallets", command=generate_wallets)
+
 
 # Добавляем элементы на вкладку создания кошельков
 group_label = Label(tab1, text="Group Name:")
@@ -38,12 +39,10 @@ num_wallets_entry.pack()
 
 def create_wallets():
     num_wallets = int(num_wallets_entry.get())
-    manager = WalletManager()
-    for i in range(num_wallets):
-        wallet = manager.create_wallet()
-        manager.add_wallet(wallet.address, wallet.private_key)
-    manager.save_wallets()
+    generate_wallets(num_wallets, group_name.get(), wallet_name.get())
     create_wallets_window.destroy()
+
+
 
 
 
@@ -82,7 +81,7 @@ def view_wallets():
 
 
 # Создаем кнопки для создания и просмотра кошельков
-generate_button = Button(tab1, text="Generate Wallets", command=create_wallets)
+generate_button = Button(tab1, text="Generate Wallets", command=generate_wallets)
 generate_button.pack()
 
 view_button = Button(tab1, text="View Wallets", command=view_wallets)
