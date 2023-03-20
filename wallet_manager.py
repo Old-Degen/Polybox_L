@@ -1,10 +1,20 @@
 from web3 import Web3, Account
+import csv
+
 
 class Wallet:
-    def __init__(self, address, private_key):
-        self.address = address
-        self.private_key = private_key
-        self.balance = 0
+    def __init__(self):
+        self.wallets = []
+        with open("wallets.csv") as f:
+            wallets_csv = csv.reader(f, delimiter=":")
+            next(wallets_csv)  # skip header
+            for row in wallets_csv:
+                self.wallets.append({
+                    "group": row[0],
+                    "name": row[1],
+                    "address": row[2],
+                    "private_key": row[3]
+                })
 
     @staticmethod
     def create_wallet():
@@ -36,10 +46,15 @@ class WalletManager:
     def __init__(self):
         self.wallets = []
         with open("wallets.csv") as f:
-            wallets_csv = csv.reader(f)
+            wallets_csv = csv.reader(f, delimiter=":")
             next(wallets_csv)  # skip header
             for row in wallets_csv:
-                self.wallets.append(row)
+                self.wallets.append({
+                    "group": row[0],
+                    "name": row[1],
+                    "address": row[2],
+                    "private_key": row[3]
+                })
 
     class WalletManager:
         def __init__(self):
@@ -48,7 +63,7 @@ class WalletManager:
                 wallets_csv = csv.reader(f)
                 next(wallets_csv)  # skip header
                 for row in wallets_csv:
-                    self.wallets.append(row)
+                    self.wallets.append({"name": row[0], "address": row[1]})
 
         def add_wallet(self, name, address):
             self.wallets.append({"name": name, "address": address})
@@ -101,7 +116,7 @@ class WalletManager:
                 wallets_csv = csv.reader(f)
                 next(wallets_csv)  # skip header
                 for row in wallets_csv:
-                    self.wallets.append(row)
+                    self.wallets.append({"name": row[0], "address": row[1]})
 
     def delete_wallet(self, index):
         del self.wallets[index]
