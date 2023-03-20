@@ -119,7 +119,17 @@ def view_wallet():
 
 def view_wallets():
     manager = WalletManager()
-    manager.view_wallets()
+    if not manager.wallets:
+        messagebox.showinfo("Error", "No wallets found")
+        return
+    view_window = Toplevel(root)
+    view_window.title("View Wallets")
+    wallets_list = Listbox(view_window)
+    for wallet in manager.wallets:
+        wallets_list.insert(END, f"{wallet[0]} - {wallet[1]} - {wallet[2]} - {wallet[3]}")
+    wallets_list.pack()
+    view_window.mainloop()
+
 
 
 
@@ -127,8 +137,9 @@ def view_wallets():
 generate_button = Button(tab1, text="Generate Wallets", command=create_wallets)
 generate_button.pack()
 
-view_button = Button(tab1, text="View Wallets", command=view_wallet)
-view_button.pack()
+view_button = Button(tab1, text="View Wallets", command=view_wallets)
+view_button.pack(side=LEFT, padx=10)
+
 
 
 notebook.pack()
