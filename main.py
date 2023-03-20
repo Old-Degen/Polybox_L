@@ -1,94 +1,96 @@
 import tkinter as tk
-from tkinter import *
-from tkinter import ttk
-from wallet_generator import generate_wallets
-from wallet_manager import WalletManager
-import sys
-import os
+import csv
+from web3 import Web3, Account
 
+class WalletManager:
+    def __init__(self):
+        self.wallets = []
+        with open("wallets.csv") as f:
+            wallets_csv = csv.reader(f)
+            next(wallets_csv)  # skip header
+            for row in wallets_csv:
+                self.wallets.append(row)
 
-sys.path.append(os.path.abspath("/path/to/directory"))
+    def add_wallet(self, name, address):
+        self.wallets.append({"name": name, "address": address})
+        self.save_wallets()
 
+    def delete_wallet(self, index):
+        del self.wallets[index]
+        self.save_wallets()
 
-root = Tk()
-root.title("ToolBox")
+    def save_wallets(self):
+        with open("wallets.csv", mode="w", newline="") as f:
+            writer = csv.writer(f)
+            writer.writerow(["name", "address"])
+            for wallet in self.wallets:
+                writer.writerow([wallet["name"], wallet["address"]])
 
-notebook = ttk.Notebook(root)
+class CreateWalletsWindow:
+    def __init__(self, parent):
+        self.parent = parent
+        self.window = tk.Toplevel(parent)
+        self.window.title("Create Wallets")
 
-# Создаем вкладку для создания кошельков
-tab1 = ttk.Frame(notebook)
-generate_button = Button(tab1, text="Generate Wallets", command=generate_wallets)
+        self.group_name_label = tk.Label(self.window, text="Group Name:")
+        self.group_name_label.pack()
+        self.group_name_entry = tk.Entry(self.window)
+        self.group_name_entry.pack()
 
+        self.wallet_name_label = tk.Label(self.window, text="Wallet Name:")
+        self.wallet_name_label.pack()
+        self.wallet_name_entry = tk.Entry(self.window)
+        self.wallet_name_entry.pack()
 
-# Добавляем элементы на вкладку создания кошельков
-group_label = Label(tab1, text="Group Name:")
-group_label.pack()
-group_name = Entry(tab1)
-group_name.pack()
+        self.num_wallets_label = tk.Label(self.window, text="Number of Wallets:")
+        self.num_wallets_label.pack()
+        self.num_wallets_entry = tk.Entry(self.window)
+        self.num_wallets_entry.pack()
 
-wallet_label = Label(tab1, text="Wallet Name:")
-wallet_label.pack()
-wallet_name = Entry(tab1)
-wallet_name.pack()
+        self.create_wallets_button = tk.Button(self.window, text="Create Wallets", command=self.create_wallets)
+        self.create_wallets_button.pack()
 
-num_label = Label(tab1, text="Number of Wallets:")
-num_label.pack()
-num_wallets_entry = Entry(tab1)
-num_wallets_entry.pack()
+    def create_wallets(self):
+        try:
+            num_wallets = int(self.num_wallets_entry.get())
+            manager = WalletManager()
+            for i in range(num_wallets):
+                account = Account.create()
+                wallet_name = self.wallet_name_entry.get() + "_" + str(i+1)
+                manager.add_wallet(wallet_name, account.address)
+            self.window.destroy()
+        except Exception as e:
+            print(f"Error generating wallets: {e}")
 
+class ViewWalletsWindow:
+    def __init__(self, parent):
+        self.parent = parent
+        self.window = tk.Toplevel(parent)
+        self.window.title("View Wallets")
 
-def create_wallets():
-    num_wallets = int(num_wallets_entry.get())
-    generate_wallets(num_wallets, group_name.get(), wallet_name.get())
-    create_wallets_window.destroy()
+        self.wallet_listbox = tk.Listbox(self.window)
+        self.wallet_listbox.pack()
 
+        self.view_wallets()
 
+    def view_wallets(self):
+        manager = WalletManager()
+        if not manager.wallets:
+            tk.messagebox.showinfo("Error", "No wallets found")
+            return
+        self.wallet_listbox.delete(0, tk.END)
+        for wallet in manager.wallets:
+            self.wallet_listbox.insert(tk.END, f"{wallet[0]} - {wallet[1]}")
 
+class App:
+    def __init__(self, root):
+        self.root = root
+        self.root.title("Ethereum Wallet Generator")
 
+        self.notebook = tk.ttk.Notebook(root)
+        self.notebook.pack(fill=tk.BOTH, expand=True)
 
-def view_wallet():
-    # Создаем экземпляр класса WalletManager
-    manager = WalletManager()
+        self.create_wallets_tab = tk.ttk.Frame(self.notebook)
+        self.notebook.add(self.create_wallets_tab, text="Create Wallets")
 
-    # Получаем список кошельков из экземпляра класса
-    wallets = manager.get_wallets_list()
-
-    # Создаем список для отображения кошельков
-    wallet_listbox = Listbox(tab2)
-    wallet_listbox.pack()
-
-    # Очищаем список для обновления
-    wallet_listbox.delete(0, END)
-
-    # Добавляем каждый кошелек в список
-    for wallet in wallets:
-        wallet_listbox.insert(END, f"{wallet[0]} - {wallet[1]}: {wallet[2]}")
-
-def view_wallets():
-    manager = WalletManager()
-    if not manager.wallets:
-        messagebox.showinfo("Error", "No wallets found")
-        return
-    view_window = Toplevel(root)
-    view_window.title("View Wallets")
-    wallets_list = Listbox(view_window)
-    for wallet in manager.wallets:
-        wallets_list.insert(END, f"{wallet[0]} - {wallet[1]} - {wallet[2]} - {wallet[3]}")
-    wallets_list.pack()
-    view_window.mainloop()
-
-
-
-
-# Создаем кнопки для создания и просмотра кошельков
-generate_button = Button(tab1, text="Generate Wallets", command=generate_wallets)
-generate_button.pack()
-
-view_button = Button(tab1, text="View Wallets", command=view_wallets)
-view_button.pack(side=LEFT, padx=10)
-
-
-
-notebook.pack()
-
-root.mainloop()
+        self.group
